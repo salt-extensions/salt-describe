@@ -1,4 +1,4 @@
-# Copyright 2023 VMware, Inc.
+# Copyright 2024 VMware, Inc.
 # SPDX-License-Identifier: Apache-2.0
 #
 def _parse_salt(minion, pip_list, **kwargs):
