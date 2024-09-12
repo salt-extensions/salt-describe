@@ -11,13 +11,13 @@ import logging
 import sys
 
 import yaml
+
 from saltext.salt_describe.utils.init import generate_files
 from saltext.salt_describe.utils.init import parse_salt_ret
 from saltext.salt_describe.utils.init import ret_info
-from saltext.salt_describe.utils.service import _parse_ansible
-from saltext.salt_describe.utils.service import _parse_chef
-from saltext.salt_describe.utils.service import _parse_salt
-
+from saltext.salt_describe.utils.service import _parse_ansible  # pylint: disable=unused-import
+from saltext.salt_describe.utils.service import _parse_chef  # pylint: disable=unused-import
+from saltext.salt_describe.utils.service import _parse_salt  # pylint: disable=unused-import
 
 __virtualname__ = "describe"
 

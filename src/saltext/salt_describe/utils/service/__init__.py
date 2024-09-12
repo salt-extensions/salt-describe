@@ -1,6 +1,10 @@
 # Copyright 2024 VMware, Inc.
 # SPDX-License-Identifier: Apache-2.0
 
+import logging
+
+log = logging.getLogger(__name__)
+
 
 def _parse_salt(minion, service_status, enabled_services, disabled_services, **kwargs):
     """

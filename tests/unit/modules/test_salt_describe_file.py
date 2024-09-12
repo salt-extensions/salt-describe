@@ -10,8 +10,9 @@ from unittest.mock import mock_open
 from unittest.mock import patch
 
 import pytest
-import saltext.salt_describe.modules.salt_describe_file as salt_describe_file_module
 import yaml
+
+import saltext.salt_describe.modules.salt_describe_file as salt_describe_file_module
 
 log = logging.getLogger(__name__)
 
@@ -48,10 +49,13 @@ def test_file(tmp_path):
         "group": "testgrp",
         "mode": "0o664",
     }
-    with patch.dict(
-        salt_describe_file_module.__salt__, {"file.read": MagicMock(return_value=read_retval)}
-    ), patch.dict(
-        salt_describe_file_module.__salt__, {"file.stats": MagicMock(return_value=stats_retval)}
+    with (
+        patch.dict(
+            salt_describe_file_module.__salt__, {"file.read": MagicMock(return_value=read_retval)}
+        ),
+        patch.dict(
+            salt_describe_file_module.__salt__, {"file.stats": MagicMock(return_value=stats_retval)}
+        ),
     ):
         with patch.object(salt_describe_file_module, "generate_files") as generate_mock:
             with patch.object(
@@ -73,7 +77,7 @@ def test_file(tmp_path):
 def test_file_permission_denied(tmp_path, minion_opts, caplog):
     if sys.platform.startswith("win32"):
         perm_denied_error_log = (
-            "Unable to create directory " "C:\\ProgramData\\Salt Project\\Salt\\srv\\salt\\minion"
+            "Unable to create directory C:\\ProgramData\\Salt Project\\Salt\\srv\\salt\\minion"
         )
     else:
         perm_denied_error_log = "Unable to create directory /srv/salt/minion"
@@ -101,14 +105,18 @@ def test_file_permission_denied(tmp_path, minion_opts, caplog):
     }
     execute_retvals = [read_retval, stats_retval]
 
-    with patch.dict(
-        salt_describe_file_module.__salt__, {"file.read": MagicMock(return_value=read_retval)}
-    ), patch.dict(
-        salt_describe_file_module.__salt__, {"file.stats": MagicMock(return_value=stats_retval)}
+    with (
+        patch.dict(
+            salt_describe_file_module.__salt__, {"file.read": MagicMock(return_value=read_retval)}
+        ),
+        patch.dict(
+            salt_describe_file_module.__salt__, {"file.stats": MagicMock(return_value=stats_retval)}
+        ),
     ):
         with patch.dict(salt_describe_file_module.__opts__, minion_opts):
-            with patch.object(PosixPath, "mkdir", side_effect=PermissionError), patch.object(
-                WindowsPath, "mkdir", side_effect=PermissionError
+            with (
+                patch.object(PosixPath, "mkdir", side_effect=PermissionError),
+                patch.object(WindowsPath, "mkdir", side_effect=PermissionError),
             ):
                 with caplog.at_level(logging.WARNING):
                     ret = salt_describe_file_module.file(str(testfile))

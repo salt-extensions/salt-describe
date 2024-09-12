@@ -1,6 +1,11 @@
 # Copyright 2024 VMware, Inc.
 # SPDX-License-Identifier: Apache-2.0
 #
+import logging
+
+log = logging.getLogger(__name__)
+
+
 def _parse_salt(minion, pip_list, **kwargs):
     """
     Parse the returned pip commands and return
@@ -29,7 +34,7 @@ def _parse_ansible(minion, pip_list, **kwargs):
         data["hosts"] = kwargs.get("hosts")
     data["tasks"].append(
         {
-            "name": f"installed_pip_libraries",
+            "name": "installed_pip_libraries",
             "ansible.builtin.pip": {
                 "name": pip_list,
             },

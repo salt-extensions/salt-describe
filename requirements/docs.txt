@@ -1,8 +1,0 @@
--r base.txt
--r changelog.txt
-sphinx
-furo
-sphinx-copybutton
-sphinx-prompt
-sphinxcontrib-spelling
-pyyaml

@@ -9,8 +9,9 @@ from unittest.mock import MagicMock
 from unittest.mock import patch
 
 import pytest
-import saltext.salt_describe.modules.salt_describe_service as salt_describe_service_module
 import yaml
+
+import saltext.salt_describe.modules.salt_describe_service as salt_describe_service_module
 
 log = logging.getLogger(__name__)
 
@@ -72,15 +73,19 @@ def test_service():
 
     service_sls = yaml.dump(service_sls_contents)
 
-    with patch.dict(
-        salt_describe_service_module.__salt__,
-        {"service.get_enabled": MagicMock(return_value=enabled_retval)},
-    ), patch.dict(
-        salt_describe_service_module.__salt__,
-        {"service.get_disabled": MagicMock(return_value=disabled_retval)},
-    ), patch.dict(
-        salt_describe_service_module.__salt__,
-        {service_status_list_func: MagicMock(return_value=service_status_list_retval)},
+    with (
+        patch.dict(
+            salt_describe_service_module.__salt__,
+            {"service.get_enabled": MagicMock(return_value=enabled_retval)},
+        ),
+        patch.dict(
+            salt_describe_service_module.__salt__,
+            {"service.get_disabled": MagicMock(return_value=disabled_retval)},
+        ),
+        patch.dict(
+            salt_describe_service_module.__salt__,
+            {service_status_list_func: MagicMock(return_value=service_status_list_retval)},
+        ),
     ):
         with patch.object(salt_describe_service_module, "generate_files") as generate_mock:
             assert "Generated SLS file locations" in salt_describe_service_module.service()
@@ -160,15 +165,19 @@ def test_service_ansible():
 
     service_yml = yaml.dump(service_yml_contents)
 
-    with patch.dict(
-        salt_describe_service_module.__salt__,
-        {"service.get_enabled": MagicMock(return_value=enabled_retval)},
-    ), patch.dict(
-        salt_describe_service_module.__salt__,
-        {"service.get_disabled": MagicMock(return_value=disabled_retval)},
-    ), patch.dict(
-        salt_describe_service_module.__salt__,
-        {service_status_list_func: MagicMock(return_value=service_status_list_retval)},
+    with (
+        patch.dict(
+            salt_describe_service_module.__salt__,
+            {"service.get_enabled": MagicMock(return_value=enabled_retval)},
+        ),
+        patch.dict(
+            salt_describe_service_module.__salt__,
+            {"service.get_disabled": MagicMock(return_value=disabled_retval)},
+        ),
+        patch.dict(
+            salt_describe_service_module.__salt__,
+            {service_status_list_func: MagicMock(return_value=service_status_list_retval)},
+        ),
     ):
         with patch.object(salt_describe_service_module, "generate_files") as generate_mock:
             assert "Generated SLS file locations" in (
@@ -227,15 +236,19 @@ service 'random-service' do
 end
 """
 
-    with patch.dict(
-        salt_describe_service_module.__salt__,
-        {"service.get_enabled": MagicMock(return_value=enabled_retval)},
-    ), patch.dict(
-        salt_describe_service_module.__salt__,
-        {"service.get_disabled": MagicMock(return_value=disabled_retval)},
-    ), patch.dict(
-        salt_describe_service_module.__salt__,
-        {service_status_list_func: MagicMock(return_value=service_status_list_retval)},
+    with (
+        patch.dict(
+            salt_describe_service_module.__salt__,
+            {"service.get_enabled": MagicMock(return_value=enabled_retval)},
+        ),
+        patch.dict(
+            salt_describe_service_module.__salt__,
+            {"service.get_disabled": MagicMock(return_value=disabled_retval)},
+        ),
+        patch.dict(
+            salt_describe_service_module.__salt__,
+            {service_status_list_func: MagicMock(return_value=service_status_list_retval)},
+        ),
     ):
         with patch.object(salt_describe_service_module, "generate_files") as generate_mock:
             assert "Generated SLS file locations" in salt_describe_service_module.service(
@@ -269,19 +282,24 @@ def test_service_permission_denied(minion_opts, caplog, perm_denied_error_log):
         }
         disabled_retval = ["salt-minion"]
 
-    with patch.dict(
-        salt_describe_service_module.__salt__,
-        {"service.get_enabled": MagicMock(return_value=enabled_retval)},
-    ), patch.dict(
-        salt_describe_service_module.__salt__,
-        {"service.get_disabled": MagicMock(return_value=disabled_retval)},
-    ), patch.dict(
-        salt_describe_service_module.__salt__,
-        {service_status_list_func: MagicMock(return_value=service_status_list_retval)},
+    with (
+        patch.dict(
+            salt_describe_service_module.__salt__,
+            {"service.get_enabled": MagicMock(return_value=enabled_retval)},
+        ),
+        patch.dict(
+            salt_describe_service_module.__salt__,
+            {"service.get_disabled": MagicMock(return_value=disabled_retval)},
+        ),
+        patch.dict(
+            salt_describe_service_module.__salt__,
+            {service_status_list_func: MagicMock(return_value=service_status_list_retval)},
+        ),
     ):
         with patch.dict(salt_describe_service_module.__opts__, minion_opts):
-            with patch.object(PosixPath, "mkdir", side_effect=PermissionError), patch.object(
-                WindowsPath, "mkdir", side_effect=PermissionError
+            with (
+                patch.object(PosixPath, "mkdir", side_effect=PermissionError),
+                patch.object(WindowsPath, "mkdir", side_effect=PermissionError),
             ):
                 with caplog.at_level(logging.WARNING):
                     ret = salt_describe_service_module.service()

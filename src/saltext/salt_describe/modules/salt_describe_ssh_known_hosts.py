@@ -11,13 +11,17 @@ import sys
 
 import salt.utils.minions  # pylint: disable=import-error
 import yaml
+
 from saltext.salt_describe.utils.init import generate_files
 from saltext.salt_describe.utils.init import parse_salt_ret
 from saltext.salt_describe.utils.init import ret_info
+
+# pylint: disable=unused-import
 from saltext.salt_describe.utils.ssh_known_hosts import _parse_ansible
 from saltext.salt_describe.utils.ssh_known_hosts import _parse_chef
 from saltext.salt_describe.utils.ssh_known_hosts import _parse_salt
 
+# pylint: enable=unused-import
 
 __virtualname__ = "describe"
 

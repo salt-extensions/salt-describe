@@ -48,9 +48,8 @@ def generate_files(opts, minion, state, sls_name="default", env="base"):
     try:
         minion_state_root.mkdir(parents=True, exist_ok=True)
     except PermissionError:
-        log.warning(
-            f"Unable to create directory {str(minion_state_root)}.  Check that the salt user has the correct permissions."
-        )
+        log_mesg = f"Unable to create directory {str(minion_state_root)}.  Check that the salt user has the correct permissions."
+        log.warning(log_mesg)
         return False
 
     minion_state_file = minion_state_root / f"{sls_name}.sls"
@@ -70,9 +69,8 @@ def generate_init(opts, minion=None, env="base"):
     try:
         minion_state_root.mkdir(parents=True, exist_ok=True)
     except PermissionError:
-        log.warning(
-            f"Unable to create directory {str(minion_state_root)}.  Check that the salt user has the correct permissions."
-        )
+        log_mesg = f"Unable to create directory {str(minion_state_root)}.  Check that the salt user has the correct permissions."
+        log.warning(log_mesg)
         return False
 
     minion_init_file = minion_state_root / "init.sls"
@@ -99,9 +97,8 @@ def generate_pillar_init(opts, minion=None, env="base"):
     try:
         minion_pillar_root.mkdir(parents=True, exist_ok=True)
     except PermissionError:
-        log.warning(
-            f"Unable to create directory {str(minion_pillar_root)}.  Check that the salt user has the correct permissions."
-        )
+        log_mesg = f"Unable to create directory {str(minion_pillar_root)}.  Check that the salt user has the correct permissions."
+        log.warning(log_mesg)
         return False
 
     minion_init_file = minion_pillar_root / "init.sls"
@@ -128,9 +125,8 @@ def generate_pillars(opts, minion, pillar, sls_name="default", env="base"):
     try:
         minion_pillar_root.mkdir(parents=True, exist_ok=True)
     except PermissionError:
-        log.warning(
-            f"Unable to create directory {str(minion_pillar_root)}.  Check that the salt user has the correct permissions."
-        )
+        log_msg = f"Unable to create directory {str(minion_pillar_root)}.  Check that the salt user has the correct permissions."
+        log.warning(log_msg)
         return False
 
     minion_pillar_file = minion_pillar_root / f"{sls_name}.sls"

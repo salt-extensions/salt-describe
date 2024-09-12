@@ -10,7 +10,8 @@ def _parse_pre_cron(line, user, commented_cron_job=False):
     if line.startswith("#"):
         try:
             return _parse_pre_cron(line.lstrip("#").lstrip(), user, commented_cron_job=True)
-        except Exception:  # pylint: disable-broad-except
+        # pylint: disable-next=broad-exception-caught
+        except Exception:
             log.debug("Failed to parse commented line as cron in pre: %s", line)
             return "comment", None, line
     if line.startswith("@"):

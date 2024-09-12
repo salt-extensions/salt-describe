@@ -3,13 +3,14 @@
 """
 Module for building state file
 
-.. versionadded:: 3006
+.. versionadded:: 3006.0
 
 """
 import logging
 import sys
 
 import yaml
+
 from saltext.salt_describe.utils.init import generate_files
 from saltext.salt_describe.utils.init import parse_salt_ret
 from saltext.salt_describe.utils.init import ret_info
@@ -147,6 +148,7 @@ def group(
 
         salt-run describe.group minion-tgt
     """
+    sls_files = []
     mod_name = sys._getframe().f_code.co_name
     groups = __salt__["salt.execute"](
         tgt,
@@ -157,7 +159,6 @@ def group(
         return ret_info(sls_files, mod=mod_name)
 
     state_contents = {}
-    sls_files = []
     for minion in list(groups.keys()):
         for group in groups[minion]:
             if minimum_gid and int(group["gid"]) <= minimum_gid:

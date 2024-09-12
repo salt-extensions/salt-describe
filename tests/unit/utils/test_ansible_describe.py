@@ -1,11 +1,10 @@
 # Copyright 2024 VMware, Inc.
 # SPDX-License-Identifier: Apache-2.0
 #
-from unittest.mock import MagicMock
-from unittest.mock import patch
+
+import yaml
 
 import saltext.salt_describe.utils.ansible_describe as ansible_describe_util
-import yaml
 
 
 def test_generate_files(tmp_path):

@@ -8,8 +8,9 @@ from unittest.mock import MagicMock
 from unittest.mock import patch
 
 import pytest
-import saltext.salt_describe.modules.salt_describe_timezone as salt_describe_timezone_module
 import yaml
+
+import saltext.salt_describe.modules.salt_describe_timezone as salt_describe_timezone_module
 
 log = logging.getLogger(__name__)
 
@@ -58,8 +59,9 @@ def test_timezone_permission_denied(minion_opts, caplog, perm_denied_error_log):
         {"timezone.get_zone": MagicMock(return_value=timezone_list)},
     ):
         with patch.dict(salt_describe_timezone_module.__opts__, minion_opts):
-            with patch.object(PosixPath, "mkdir", side_effect=PermissionError), patch.object(
-                WindowsPath, "mkdir", side_effect=PermissionError
+            with (
+                patch.object(PosixPath, "mkdir", side_effect=PermissionError),
+                patch.object(WindowsPath, "mkdir", side_effect=PermissionError),
             ):
                 with caplog.at_level(logging.WARNING):
                     ret = salt_describe_timezone_module.timezone()

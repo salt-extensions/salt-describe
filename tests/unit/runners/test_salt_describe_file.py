@@ -10,8 +10,9 @@ from unittest.mock import mock_open
 from unittest.mock import patch
 
 import pytest
-import saltext.salt_describe.runners.salt_describe_file as salt_describe_file_runner
 import yaml
+
+import saltext.salt_describe.runners.salt_describe_file as salt_describe_file_runner
 
 log = logging.getLogger(__name__)
 
@@ -74,7 +75,7 @@ def test_file(tmp_path):
 def test_file_permission_denied(tmp_path, minion_opts, caplog):
     if sys.platform.startswith("win32"):
         perm_denied_error_log = (
-            "Unable to create directory " "C:\\ProgramData\\Salt Project\\Salt\\srv\\salt\\minion"
+            "Unable to create directory C:\\ProgramData\\Salt Project\\Salt\\srv\\salt\\minion"
         )
     else:
         perm_denied_error_log = "Unable to create directory /srv/salt/minion"
@@ -108,8 +109,9 @@ def test_file_permission_denied(tmp_path, minion_opts, caplog):
         salt_describe_file_runner.__salt__, {"salt.execute": MagicMock(side_effect=execute_retvals)}
     ):
         with patch.dict(salt_describe_file_runner.__opts__, minion_opts):
-            with patch.object(PosixPath, "mkdir", side_effect=PermissionError), patch.object(
-                WindowsPath, "mkdir", side_effect=PermissionError
+            with (
+                patch.object(PosixPath, "mkdir", side_effect=PermissionError),
+                patch.object(WindowsPath, "mkdir", side_effect=PermissionError),
             ):
                 with caplog.at_level(logging.WARNING):
                     ret = salt_describe_file_runner.file("minion", str(testfile))

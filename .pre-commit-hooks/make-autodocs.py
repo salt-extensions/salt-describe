@@ -6,7 +6,6 @@ import sys
 from enum import IntEnum
 from pathlib import Path
 
-
 repo_path = Path(subprocess.check_output(["git", "rev-parse", "--show-toplevel"]).decode().strip())
 src_dir = repo_path / "src" / "saltext" / "salt-describe"
 doc_dir = repo_path / "docs"

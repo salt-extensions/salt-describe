@@ -3,20 +3,20 @@
 """
 Module for building state file
 
-.. versionadded:: 3006
+.. versionadded:: 3006.0
 
 """
 import logging
 import pathlib
-from inspect import getargspec
 from inspect import Parameter
+from inspect import getargspec
 from inspect import signature
 
 import salt.daemons.masterapi  # pylint: disable=import-error
 import salt.utils.files  # pylint: disable=import-error
 import yaml
-from saltext.salt_describe.utils.init import ret_info
 
+from saltext.salt_describe.utils.init import ret_info
 
 __virtualname__ = "describe"
 
@@ -166,14 +166,14 @@ def all_(tgt, top=True, include=None, exclude=None, config_system="salt", **kwar
                 call_args.append(p_value)
             elif p_obj.kind == Parameter.VAR_POSITIONAL:
                 if not isinstance(p_value, list):
-                    log.error(f"{p_name} must be a Python list")
+                    log.error("%s must be a Python list", p_name)
                     return False
                 call_args.extend(p_value)
             elif p_obj.kind == Parameter.KEYWORD_ONLY:
                 call_kwargs[p_name] = p_value
             elif p_obj.kind == Parameter.VAR_KEYWORD:
                 if not isinstance(p_value, dict):
-                    log.error(f"{p_name} must be a Python dictionary")
+                    log.error("%s must be a Python dictionary", p_name)
                     return False
                 call_kwargs.update(p_value)
             elif p_name not in args:
@@ -184,7 +184,9 @@ def all_(tgt, top=True, include=None, exclude=None, config_system="salt", **kwar
         try:
             bound_sig = sig.bind(*call_args, **call_kwargs)
         except TypeError:
-            log.error(f"Invalid args, kwargs for signature of {name}: {call_args}, {call_kwargs}")
+            log.error(
+                "Invalid args, kwargs for signature of %s: %s, %s", name, call_args, call_kwargs
+            )
             return False
 
         log.debug(
@@ -197,12 +199,12 @@ def all_(tgt, top=True, include=None, exclude=None, config_system="salt", **kwar
 
         try:
             # This follows the unwritten standard that the minion target must be the first argument
-            log.debug(f"Generating SLS for {name} module")
+            log.debug("Generating SLS for %s module", name)
             ret = __salt__[f"describe.{name}"](*bound_sig.args, **bound_sig.kwargs)
             if isinstance(ret, dict):
                 sls_files = sls_files + list(ret.values())[0]
             else:
-                log.error(f"Could not generate the SLS file for {name}")
+                log.error("Could not generate the SLS file for %s", name)
         except TypeError as err:
             log.error(err.args[0])
 
@@ -248,7 +250,7 @@ def top_(tgt, tgt_type="glob", env="base"):
         add_top = []
         minion_file_root = state_file_root / minion
         if not minion_file_root.exists():
-            log.error(f"The file root path {minion_file_root} does not exist")
+            log.error("The file root path %s does not exist", minion_file_root)
             return False
         for file in minion_file_root.iterdir():
             if file.suffix == ".sls" and file.stem != "init":

@@ -12,10 +12,10 @@ import sys
 
 import salt.utils.minions  # pylint: disable=import-error
 import yaml
+
 from saltext.salt_describe.utils.init import generate_files
 from saltext.salt_describe.utils.init import parse_salt_ret
 from saltext.salt_describe.utils.init import ret_info
-
 
 __virtualname__ = "describe"
 

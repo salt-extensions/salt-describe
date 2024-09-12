@@ -4,18 +4,19 @@
 # pylint: disable=line-too-long
 import inspect
 import logging
-from unittest.mock import create_autospec
 from unittest.mock import MagicMock
+from unittest.mock import create_autospec
 from unittest.mock import patch
 
 import pytest
 import salt.config  # pylint: disable=import-error
+import yaml
+
 import saltext.salt_describe.runners.salt_describe as salt_describe_runner
 import saltext.salt_describe.runners.salt_describe_cron as salt_describe_cron_runner
 import saltext.salt_describe.runners.salt_describe_file as salt_describe_file_runner
 import saltext.salt_describe.runners.salt_describe_pip as salt_describe_pip_runner
 import saltext.salt_describe.runners.salt_describe_pkg as salt_describe_pkg_runner
-import yaml
 
 log = logging.getLogger(__name__)
 
@@ -152,7 +153,7 @@ def test_top(tmp_path):
             top_contents = yaml.safe_load(top_file.read_text())
 
             # Can't compare directly here because order of lists is inconsistent from yaml.safe_load
-            for env in expected_contents:
+            for env, _val in expected_contents.items():
                 assert env in top_contents
                 for minion in expected_contents[env]:
                     assert len(expected_contents[env][minion]) == len(top_contents[env][minion])
@@ -198,7 +199,7 @@ def test_pillar_top(tmp_path):
             top_contents = yaml.safe_load(top_file.read_text())
 
             # Can't compare directly here because order of lists is inconsistent from yaml.safe_load
-            for env in expected_contents:
+            for env, _val in expected_contents.items():
                 assert env in top_contents
                 for minion in expected_contents[env]:
                     assert len(expected_contents[env][minion]) == len(top_contents[env][minion])

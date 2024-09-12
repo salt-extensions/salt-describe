@@ -4,14 +4,13 @@
 import logging
 from pathlib import PosixPath
 from pathlib import WindowsPath
-from unittest.mock import call
 from unittest.mock import MagicMock
-from unittest.mock import mock_open
 from unittest.mock import patch
 
 import pytest
-import saltext.salt_describe.runners.salt_describe_sysctl as salt_describe_sysctl_runner
 import yaml
+
+import saltext.salt_describe.runners.salt_describe_sysctl as salt_describe_sysctl_runner
 
 log = logging.getLogger(__name__)
 
@@ -58,8 +57,9 @@ def test_sysctl_permission_denied(caplog, minion_opts, perm_denied_error_log):
         salt_describe_sysctl_runner.__salt__, {"salt.execute": MagicMock(return_value=sysctl_show)}
     ):
         with patch.dict(salt_describe_sysctl_runner.__opts__, minion_opts):
-            with patch.object(PosixPath, "mkdir", side_effect=PermissionError), patch.object(
-                WindowsPath, "mkdir", side_effect=PermissionError
+            with (
+                patch.object(PosixPath, "mkdir", side_effect=PermissionError),
+                patch.object(WindowsPath, "mkdir", side_effect=PermissionError),
             ):
                 with caplog.at_level(logging.WARNING):
                     ret = salt_describe_sysctl_runner.sysctl("minion", ["vm.swappiness"])

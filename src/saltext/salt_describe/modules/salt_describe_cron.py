@@ -10,6 +10,7 @@ import logging
 import sys
 
 import yaml
+
 from saltext.salt_describe.utils.cron import _parse_pre_cron
 from saltext.salt_describe.utils.init import generate_files
 from saltext.salt_describe.utils.init import parse_salt_ret
@@ -118,7 +119,7 @@ def cron(user="root", include_pre=True, config_system="salt"):
         # Merge them all together
         final_sls = {}
         for sls_contents in (env_sls, crons_sls, specials_sls):
-            for state_name in sls_contents:
+            for state_name, _val in sls_contents.items():
                 final_sls[state_name] = sls_contents[state_name]
 
         sls_yaml = yaml.dump(final_sls)

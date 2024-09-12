@@ -1,7 +1,6 @@
 # Copyright 2024 VMware, Inc.
 # SPDX-License-Identifier: Apache-2.0
 #
-import json
 import logging
 from pathlib import PosixPath
 from pathlib import WindowsPath
@@ -9,8 +8,9 @@ from unittest.mock import MagicMock
 from unittest.mock import patch
 
 import pytest
-import saltext.salt_describe.modules.salt_describe_user as salt_describe_user_module
 import yaml
+
+import saltext.salt_describe.modules.salt_describe_user as salt_describe_user_module
 
 log = logging.getLogger(__name__)
 
@@ -120,15 +120,19 @@ def test_user():
 
     user_pillar = yaml.dump(user_pillar_contents)
 
-    with patch.dict(
-        salt_describe_user_module.__salt__,
-        {"user.getent": MagicMock(return_value=user_getent)},
-    ), patch.dict(
-        salt_describe_user_module.__salt__,
-        {"shadow.info": MagicMock(return_value=user_shadow)},
-    ), patch.dict(
-        salt_describe_user_module.__salt__,
-        {"file.directory_exists": MagicMock(return_value=fileexists)},
+    with (
+        patch.dict(
+            salt_describe_user_module.__salt__,
+            {"user.getent": MagicMock(return_value=user_getent)},
+        ),
+        patch.dict(
+            salt_describe_user_module.__salt__,
+            {"shadow.info": MagicMock(return_value=user_shadow)},
+        ),
+        patch.dict(
+            salt_describe_user_module.__salt__,
+            {"file.directory_exists": MagicMock(return_value=fileexists)},
+        ),
     ):
         with patch.object(salt_describe_user_module, "generate_files") as generate_files_mock:
             with patch.object(
@@ -253,15 +257,19 @@ def test_user_minimum_maximum_uid():
 
     user_pillar = yaml.dump(user_pillar_contents)
 
-    with patch.dict(
-        salt_describe_user_module.__salt__,
-        {"user.getent": MagicMock(return_value=user_getent)},
-    ), patch.dict(
-        salt_describe_user_module.__salt__,
-        {"shadow.info": MagicMock(side_effect=[user_shadow, user_shadow2, user_shadow3])},
-    ), patch.dict(
-        salt_describe_user_module.__salt__,
-        {"file.directory_exists": MagicMock(return_value=fileexists)},
+    with (
+        patch.dict(
+            salt_describe_user_module.__salt__,
+            {"user.getent": MagicMock(return_value=user_getent)},
+        ),
+        patch.dict(
+            salt_describe_user_module.__salt__,
+            {"shadow.info": MagicMock(side_effect=[user_shadow, user_shadow2, user_shadow3])},
+        ),
+        patch.dict(
+            salt_describe_user_module.__salt__,
+            {"file.directory_exists": MagicMock(return_value=fileexists)},
+        ),
     ):
         with patch.object(salt_describe_user_module, "generate_files") as generate_files_mock:
             with patch.object(
@@ -288,8 +296,9 @@ def test_group_permission_denied(minion_opts, caplog, perm_denied_error_log):
         salt_describe_user_module.__salt__, {"group.getent": MagicMock(return_value=group_getent)}
     ):
         with patch.dict(salt_describe_user_module.__opts__, minion_opts):
-            with patch.object(PosixPath, "mkdir", side_effect=PermissionError), patch.object(
-                WindowsPath, "mkdir", side_effect=PermissionError
+            with (
+                patch.object(PosixPath, "mkdir", side_effect=PermissionError),
+                patch.object(WindowsPath, "mkdir", side_effect=PermissionError),
             ):
                 with caplog.at_level(logging.WARNING):
                     ret = salt_describe_user_module.group()
@@ -332,19 +341,24 @@ def test_user_permission_denied(minion_opts, caplog, perm_denied_error_log):
         "users": {"testuser": "$5$k69zJBp1LxA3q8az$XKEp1knAex0j.xoi/sdU4XllHpZ0JzYYRfASKGl6qZA"},
     }
 
-    with patch.dict(
-        salt_describe_user_module.__salt__,
-        {"user.getent": MagicMock(return_value=user_getent)},
-    ), patch.dict(
-        salt_describe_user_module.__salt__,
-        {"shadow.info": MagicMock(return_value=user_shadow)},
-    ), patch.dict(
-        salt_describe_user_module.__salt__,
-        {"file.directory_exists": MagicMock(return_value=fileexists)},
+    with (
+        patch.dict(
+            salt_describe_user_module.__salt__,
+            {"user.getent": MagicMock(return_value=user_getent)},
+        ),
+        patch.dict(
+            salt_describe_user_module.__salt__,
+            {"shadow.info": MagicMock(return_value=user_shadow)},
+        ),
+        patch.dict(
+            salt_describe_user_module.__salt__,
+            {"file.directory_exists": MagicMock(return_value=fileexists)},
+        ),
     ):
         with patch.dict(salt_describe_user_module.__opts__, minion_opts):
-            with patch.object(PosixPath, "mkdir", side_effect=PermissionError), patch.object(
-                WindowsPath, "mkdir", side_effect=PermissionError
+            with (
+                patch.object(PosixPath, "mkdir", side_effect=PermissionError),
+                patch.object(WindowsPath, "mkdir", side_effect=PermissionError),
             ):
                 with caplog.at_level(logging.WARNING):
                     ret = salt_describe_user_module.user()

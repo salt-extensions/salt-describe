@@ -7,12 +7,12 @@ Module for building state file
 
 """
 import logging
-import os
 import pathlib
 import sys
 
 import salt.utils.files  # pylint: disable=import-error
 import yaml
+
 from saltext.salt_describe.utils.init import generate_files
 from saltext.salt_describe.utils.init import get_minion_state_file_root
 from saltext.salt_describe.utils.init import parse_salt_ret
@@ -97,10 +97,11 @@ def file(paths, tgt_type="glob", config_system="salt"):
             try:
                 path_file.parent.mkdir(parents=True, exist_ok=True)
             except PermissionError:
-                log.warning(
-                    f"Unable to create directory {str(path_file.parent)}.  "
+                log_msg = (
+                    "Unable to create directory {str(path_file.parent)}.  "
                     "Check that the salt user has the correct permissions."
                 )
+                log.warning(log_msg)
                 return False
 
             with salt.utils.files.fopen(path_file, "w") as fp_:

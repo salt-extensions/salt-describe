@@ -4,8 +4,9 @@
 from unittest.mock import MagicMock
 from unittest.mock import patch
 
-import saltext.salt_describe.utils.salt_describe as salt_describe_util
 import yaml
+
+import saltext.salt_describe.utils.salt_describe as salt_describe_util
 
 
 def test_get_state_file_root(tmp_path):

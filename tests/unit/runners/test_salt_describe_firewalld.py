@@ -8,8 +8,9 @@ from unittest.mock import MagicMock
 from unittest.mock import patch
 
 import pytest
-import saltext.salt_describe.runners.salt_describe_firewalld as salt_describe_firewalld_runner
 import yaml
+
+import saltext.salt_describe.runners.salt_describe_firewalld as salt_describe_firewalld_runner
 
 log = logging.getLogger(__name__)
 
@@ -93,8 +94,9 @@ def test_firewalld_permissioned_denied(minion_opts, caplog, firewalld_ret, perm_
         {"salt.execute": MagicMock(return_value=firewalld_ret)},
     ):
         with patch.dict(salt_describe_firewalld_runner.__opts__, minion_opts):
-            with patch.object(PosixPath, "mkdir", side_effect=PermissionError), patch.object(
-                WindowsPath, "mkdir", side_effect=PermissionError
+            with (
+                patch.object(PosixPath, "mkdir", side_effect=PermissionError),
+                patch.object(WindowsPath, "mkdir", side_effect=PermissionError),
             ):
                 with caplog.at_level(logging.WARNING):
                     ret = salt_describe_firewalld_runner.firewalld("minion")

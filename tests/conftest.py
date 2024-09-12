@@ -6,8 +6,9 @@ import sys
 
 import pytest
 import salt.config
-from saltext.salt_describe import PACKAGE_ROOT
 from saltfactories.utils import random_string
+
+from saltext.salt_describe import PACKAGE_ROOT
 
 
 @pytest.fixture(scope="session")

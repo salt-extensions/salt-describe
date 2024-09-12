@@ -45,7 +45,7 @@ def _parse_ansible(minion, pkgs, single_state, include_version, pkg_cmd, **kwarg
         _pkgs = list(pkgs.keys())
         data["tasks"].append(
             {
-                "name": f"Package Installaion",
+                "name": "Package Installaion",
                 f"{pkg_cmd}": {
                     "name": _pkgs,
                 },

@@ -7,7 +7,6 @@ import pathlib
 import salt.config
 import salt.syspaths
 import salt.utils.files
-import yaml
 
 log = logging.getLogger(__name__)
 
@@ -23,9 +22,8 @@ def generate_files(opts, minion, state, sls_name="default", env="base", root=Non
     try:
         minion_state_root.mkdir(parents=True, exist_ok=True)
     except PermissionError:
-        log.warning(
-            f"Unable to create directory {str(minion_state_root)}.  Check that the salt user has the correct permissions."
-        )
+        log_msg = f"Unable to create directory {str(minion_state_root)}.  Check that the salt user has the correct permissions."
+        log.warning(log_msg)
         return False
 
     minion_state_file = minion_state_root / f"{sls_name}.yml"

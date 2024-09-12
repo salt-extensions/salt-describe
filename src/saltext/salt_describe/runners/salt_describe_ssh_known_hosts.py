@@ -9,15 +9,19 @@ Runner for building state file
 import logging
 import sys
 
-import salt.utils.minions  # pylint: disable=import-error
+import salt.utils.minions  # pylint: disable=import-error,unused-import
 import yaml
+
 from saltext.salt_describe.utils.init import generate_files
 from saltext.salt_describe.utils.init import parse_salt_ret
 from saltext.salt_describe.utils.init import ret_info
+
+# pylint: disable=unused-import
 from saltext.salt_describe.utils.ssh_known_hosts import _parse_ansible
 from saltext.salt_describe.utils.ssh_known_hosts import _parse_chef
 from saltext.salt_describe.utils.ssh_known_hosts import _parse_salt
 
+# pylint: enable=unused-import
 
 __virtualname__ = "describe"
 
@@ -43,11 +47,13 @@ def ssh_known_hosts(tgt, tgt_type="glob", config_system="salt", **kwargs):
 
         salt-run describe.ssh_known_hosts config_system=chef
     """
+    mod_name = sys._getframe().f_code.co_name
     known_hosts = __salt__["salt.execute"](
         tgt,
         "ssh.auth_keys",
         tgt_type=tgt_type,
     )
+    func_ret = [known_hosts]
 
     sls_files = []
     for _func_ret in func_ret:

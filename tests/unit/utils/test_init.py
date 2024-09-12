@@ -1,12 +1,11 @@
 # Copyright 2024 VMware, Inc.
 # SPDX-License-Identifier: Apache-2.0
 #
-from unittest.mock import MagicMock
-from unittest.mock import patch
 
 import pytest
-import saltext.salt_describe.utils.init as describe_util
 import yaml
+
+import saltext.salt_describe.utils.init as describe_util
 
 
 @pytest.mark.parametrize(
@@ -60,7 +59,7 @@ def test_ret_info_no_sls_files(caplog):
     """
     sls_files = []
     ret = describe_util.ret_info(sls_files)
-    "SLS file not generated" in caplog.text
+    assert "SLS file not generated" in caplog.text
     assert ret is False
 
 
