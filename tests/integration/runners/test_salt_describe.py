@@ -1,6 +1,8 @@
 # Copyright 2024 VMware, Inc.
 # SPDX-License-Identifier: Apache-2.0
 #
+import locale
+
 import yaml
 
 
@@ -21,14 +23,14 @@ def test_top(salt_run_cli, minion, base_env_state_tree_root_dir):
     ret = salt_run_cli.run("describe.top", tgt=minion.id)
     assert ret.returncode == 0
     gen_sls = ret.data["Generated SLS file locations"]
-    with open(gen_sls) as fp:
+    with open(gen_sls, encoding=locale.getpreferredencoding()) as fp:
         data = yaml.safe_load(fp)
     assert data["base"][minion.id] == [f"{minion.id}.host"]
 
     # Run describe.top and ensure it doesn't add any other entires
     ret = salt_run_cli.run("describe.top", tgt=minion.id)
     assert ret.returncode == 0
-    with open(gen_sls) as fp:
+    with open(gen_sls, encoding=locale.getpreferredencoding()) as fp:
         data = yaml.safe_load(fp)
     assert data["base"][minion.id] == [f"{minion.id}.host"]
     assert len(data["base"][minion.id]) == 1
@@ -38,7 +40,7 @@ def test_top(salt_run_cli, minion, base_env_state_tree_root_dir):
     assert ret.returncode == 0
     ret = salt_run_cli.run("describe.top", tgt=minion.id)
     assert ret.returncode == 0
-    with open(gen_sls) as fp:
+    with open(gen_sls, encoding=locale.getpreferredencoding()) as fp:
         data = yaml.safe_load(fp)
     assert data["base"][minion.id] == [f"{minion.id}.host", f"{minion.id}.pkg"]
     assert len(data["base"][minion.id]) == 2

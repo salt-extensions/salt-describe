@@ -1,6 +1,7 @@
 # Copyright 2024 VMware, Inc.
 # SPDX-License-Identifier: Apache-2.0
 #
+import locale
 import sys
 
 import pytest
@@ -18,7 +19,7 @@ def test_sysctl(salt_run_cli, minion):
         sysctl_key = "vm.swappiness"
     ret = salt_run_cli.run("describe.sysctl", tgt=minion.id, sysctl_items=[sysctl_key])
     gen_sls = ret.data["Generated SLS file locations"][0]
-    with open(gen_sls) as fp:
+    with open(gen_sls, encoding=locale.getpreferredencoding()) as fp:
         data = yaml.safe_load(fp)
     assert data[f"sysctl-{sysctl_key}"]["sysctl.present"][0]["name"] == sysctl_key
     assert ret.returncode == 0
