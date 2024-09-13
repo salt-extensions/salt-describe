@@ -5,11 +5,14 @@ import locale
 
 import pytest
 import salt.grains.core as core_grains
+import salt.utils.platform
 import yaml
 
 
 @pytest.mark.skipif(
-    core_grains.saltversion()["saltversion"] == "3006.9",
+    salt.utils.platform.is_darwin()
+    or salt.utils.platform.is_windows()
+    and core_grains.saltversion()["saltversion"] == "3006.9",
     reason="Fails because of old requirements on 3006.x",
 )
 def test_pip(salt_run_cli, minion):
