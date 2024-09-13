@@ -14,12 +14,12 @@ jobs:
     timeout-minutes: 10
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
 
-    - name: Set up Python 3.7 For Nox
-      uses: actions/setup-python@v1
+    - name: Set up Python 3.10 For Nox
+      uses: actions/setup-python@v5
       with:
-        python-version: 3.7
+        python-version: "3.10"
 
     - name: Install Nox
       run: |
@@ -32,7 +32,7 @@ jobs:
 
     - name: Build Docs
       env:
-        SKIP_REQUIREMENTS_INSTALL: YES
+        SKIP_REQUIREMENTS_INSTALL: true
       run: |
         nox --force-color -e docs
 
