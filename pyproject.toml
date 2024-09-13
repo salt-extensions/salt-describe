@@ -75,6 +75,7 @@ tests = [
     "pytest>=7.2.0",
     "pytest-salt-factories>=1.0.0; sys_platform == 'win32'",
     "pytest-salt-factories[docker]>=1.0.0; sys_platform != 'win32'",
+    "cryptography"
 ]
 
 [project.entry-points."salt.loader"]
