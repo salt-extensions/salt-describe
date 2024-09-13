@@ -290,6 +290,9 @@ jobs:
         python -m pip install --upgrade pip
         pip install nox
 
+    - name: Setup upterm session
+      uses: lhotari/action-upterm@v1
+
     - name: Install Test Requirements
       env:
         SALT_REQUIREMENT: salt==${{ matrix.salt-version }}
