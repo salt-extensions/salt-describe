@@ -275,7 +275,7 @@ jobs:
       matrix:
         include:
           - {"salt-version": "3006.8", "python-version": "3.10", "source": "pypi"}
-          - {"salt-version": "3007.i", "python-version": "3.10", "source": "pypi"}
+          - {"salt-version": "3007.1", "python-version": "3.10", "source": "pypi"}
 
     steps:
     - uses: actions/checkout@v4
