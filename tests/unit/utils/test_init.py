@@ -58,8 +58,8 @@ def test_ret_info_no_sls_files(caplog):
     Test when ret_info when sls_files exist
     """
     sls_files = []
-    ret = describe_util.ret_info(sls_files)
-    assert "SLS file not generated" in caplog.text
+    ret = describe_util.ret_info(sls_files, mod="example_mod")
+    assert "Could not generate SLS file for example_mod" in caplog.text
     assert ret is False
 
 

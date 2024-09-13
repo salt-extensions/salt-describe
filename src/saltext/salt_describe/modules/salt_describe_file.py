@@ -98,7 +98,7 @@ def file(paths, tgt_type="glob", config_system="salt"):
                 path_file.parent.mkdir(parents=True, exist_ok=True)
             except PermissionError:
                 log_msg = (
-                    "Unable to create directory {str(path_file.parent)}.  "
+                    f"Unable to create directory {str(path_file.parent)}.  "
                     "Check that the salt user has the correct permissions."
                 )
                 log.warning(log_msg)
