@@ -43,9 +43,9 @@ file = "README.md"
 content-type = "text/markdown"
 
 [project.urls]
-Homepage = "https://github.com/salt-extensions/saltext-convert"
-Source = "https://github.com/salt-extensions/saltext-convert"
-Tracker = "https://github.com/salt-extensions/saltext-convert/issues"
+Homepage = "https://github.com/salt-extensions/saltext-describe"
+Source = "https://github.com/salt-extensions/saltext-describe"
+Tracker = "https://github.com/salt-extensions/saltext-describe/issues"
 
 [project.optional-dependencies]
 changelog = ["towncrier==22.12.0"]
@@ -78,7 +78,7 @@ tests = [
 ]
 
 [project.entry-points."salt.loader"]
-"saltext.salt_describe" = "saltext.salt_convert"
+"saltext.salt_describe" = "saltext.salt_describe"
 
 [tool.setuptools]
 zip-safe = false
@@ -118,7 +118,7 @@ directory = "changelog/"
 start_string = "# Changelog\n"
 underlines = ["", "", ""]
 title_format = "## {version} ({project_date})"
-issue_format = "[#{issue}](https://github.com/salt-extensions/saltext-convert/issues/{issue})"
+issue_format = "[#{issue}](https://github.com/salt-extensions/saltext-describe/issues/{issue})"
 
 [[tool.towncrier.type]]
 directory = "removed"
