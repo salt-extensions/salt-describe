@@ -79,8 +79,8 @@ def test_all(tmp_path):
                     )
                 )
                 cron_mock.assert_not_called()
-                file_mock.assert_called_with("minion", "/fake/path", config_system="salt")
-                pip_mock.assert_called_with("minion", bin_env="fake-env", config_system="salt")
+                file_mock.assert_called_with("minion", "/fake/path", "glob", "salt")
+                pip_mock.assert_called_with("minion", "glob", "fake-env", "salt")
                 pkg_mock.assert_not_called()
 
             with patch.object(salt_describe_runner, "signature", side_effect=inspect_retvals):
@@ -95,8 +95,8 @@ def test_all(tmp_path):
                     )
                 )
                 cron_mock.assert_not_called()
-                file_mock.assert_called_with("minion", "/fake/path", config_system="salt")
-                pip_mock.assert_called_with("minion", bin_env="fake-env", config_system="salt")
+                file_mock.assert_called_with("minion", "/fake/path", "glob", "salt")
+                pip_mock.assert_called_with("minion", "glob", "fake-env", "salt")
                 pkg_mock.assert_not_called()
 
 
