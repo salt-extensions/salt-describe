@@ -56,7 +56,9 @@ def _get_all_single_describe_methods():
 
 
 @_exclude_from_all
-def all_(tgt, top=True, include=None, exclude=None, config_system="salt", **kwargs):
+def all_(
+    tgt, top=True, include=None, exclude=None, tgt_type="glob", config_system="salt", **kwargs
+):
     """
     Run all describe methods against target.
 
@@ -120,14 +122,20 @@ def all_(tgt, top=True, include=None, exclude=None, config_system="salt", **kwar
         Return the argument value and whether or not it failed to find
         """
         # Allow more specific arg to take precendence
+        describe_config = __opts__.get("describe")
         spec_name = f"{func_name}_{p_name}"
         if spec_name in kwargs:
             return kwargs.get(spec_name), False
         if p_name in kwargs:
             return kwargs.get(p_name), False
+        if func_name == "file":
+            if kwargs.get("tgt") and kwargs.get("tgt") in describe_config:
+                _tgt = kwargs.get("tgt")
+                return describe_config[_tgt].get(func_name, {}).get(p_name, None), False
         return None, True
 
     kwargs["tgt"] = tgt
+    kwargs["tgt_type"] = tgt_type
     kwargs["config_system"] = config_system
 
     sls_files = []
