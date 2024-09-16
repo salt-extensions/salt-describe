@@ -11,10 +11,9 @@ def _parse_salt(minion, user_keys, **kwargs):
     salt data.
     """
     state_contents = {}
-    _user_keys = user_keys[minion]
-    for user in _user_keys:
-        for key in _user_keys[user]:
-            data = _user_keys[user][key]
+    for user in user_keys:
+        for key in user_keys[user]:
+            data = user_keys[user][key]
             ssh_auth_present = [{"user": user}, {"enc": data["enc"]}]
 
             if data.get("options"):
@@ -42,10 +41,9 @@ def _parse_ansible(minion, user_keys, **kwargs):
         data["hosts"] = kwargs.get("hosts")
     state_contents = []
 
-    _user_keys = user_keys[minion]
-    for user in _user_keys:
-        for key in _user_keys[user]:
-            key_data = _user_keys[user][key]
+    for user in user_keys:
+        for key in user_keys[user]:
+            key_data = user_keys[user][key]
 
             ssh_auth_data = {"user": user, "key": key}
 
@@ -70,10 +68,9 @@ def _parse_chef(minion, user_keys, **kwargs):
     _contents = []
 
     _contents.append("depends 'ssh_authorized_keys'")
-    _user_keys = user_keys[minion]
-    for user in _user_keys:
-        for key in _user_keys[user]:
-            data = _user_keys[user][key]
+    for user in user_keys:
+        for key in user_keys[user]:
+            data = user_keys[user][key]
 
             service_template = f"""ssh_authorize_key '{user}' do
   key '{key}'
