@@ -38,7 +38,7 @@ def pip(tgt, tgt_type="glob", bin_env=None, config_system="salt", **kwargs):
         salt-run describe.pip minion-tgt
 
     """
-    describe_config = __opts__.get("describe")
+    describe_config = __opts__.get("describe", {})
     if not bin_env:
         bin_env = describe_config.get(tgt, {}).get("pip", {}).get("bin_env", None)
 

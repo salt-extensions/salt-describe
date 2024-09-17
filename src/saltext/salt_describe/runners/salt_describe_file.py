@@ -40,7 +40,7 @@ def file(tgt, paths=None, tgt_type="glob", config_system="salt"):
 
         salt-run describe.file minion-tgt /etc/salt/minion
     """
-    describe_config = __opts__.get("describe")
+    describe_config = __opts__.get("describe", {})
     if not paths:
         paths = describe_config.get(tgt, {}).get("file", {}).get("paths", {})
         if not paths:
