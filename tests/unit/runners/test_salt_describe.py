@@ -205,3 +205,64 @@ def test_pillar_top(tmp_path):
                     assert len(expected_contents[env][minion]) == len(top_contents[env][minion])
                     for sls in expected_contents[env][minion]:
                         assert sls in top_contents[env][minion]
+
+
+def test_all_configuration_file(tmp_path, master_opts):
+    """
+    test describe.all
+    """
+    cron_mock = create_autospec(salt_describe_cron_runner.cron)
+    file_mock = create_autospec(salt_describe_file_runner.file)
+    pip_mock = create_autospec(salt_describe_pip_runner.pip)
+    pkg_mock = create_autospec(salt_describe_pkg_runner.pkg)
+
+    cron_mock.return_value = {"generate": [str(tmp_path / "cron.sls")]}
+    file_mock.return_value = {"generate": [str(tmp_path / "file.sls")]}
+    pip_mock.return_value = {"generate": [str(tmp_path / "pip.sls")]}
+    pkg_mock.return_value = {"generate": [str(tmp_path / "pkg.sls")]}
+
+    all_methods = {
+        "cron": cron_mock,
+        "file": file_mock,
+        "pip": pip_mock,
+        "pkg": pkg_mock,
+    }
+
+    # Workaround for a bug in python 3.6: https://bugs.python.org/issue17185
+    inspect_retvals = [
+        inspect.signature(salt_describe_file_runner.file),
+        inspect.signature(salt_describe_pip_runner.pip),
+    ]
+
+    master_opts["describe"] = {
+        "minion": {
+            "file": {"paths": ["/fake/path"]},
+            "pip": {"bin_env": "fake-env"},
+        }
+    }
+    with patch.dict(salt_describe_runner.__opts__, master_opts):
+        with patch.object(
+            salt_describe_runner, "_get_all_single_describe_methods", return_value=all_methods
+        ):
+            dunder_salt_mock = {
+                "describe.cron": cron_mock,
+                "describe.file": file_mock,
+                "describe.pip": pip_mock,
+                "describe.pkg": pkg_mock,
+            }
+
+            # This should only run file and pip
+            with patch.dict(salt_describe_runner.__salt__, dunder_salt_mock):
+                with patch.object(salt_describe_runner, "signature", side_effect=inspect_retvals):
+                    exclude = ["cron", "pkg"]
+                    assert "Generated SLS file locations" in (
+                        salt_describe_runner.all_(
+                            "minion",
+                            top=False,
+                            exclude=exclude,
+                        )
+                    )
+                    cron_mock.assert_not_called()
+                    file_mock.assert_called_with("minion", ["/fake/path"], "glob", "salt")
+                    pip_mock.assert_called_with("minion", "glob", "fake-env", "salt")
+                    pkg_mock.assert_not_called()

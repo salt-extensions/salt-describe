@@ -121,6 +121,10 @@ def all_(
         """
         Return the argument value and whether or not it failed to find
         """
+        # If function definition includes kwargs, skip it
+        if p_name == "kwargs":
+            return None, True
+
         # Allow more specific arg to take precendence
         describe_config = __opts__.get("describe")
         spec_name = f"{func_name}_{p_name}"
@@ -128,10 +132,9 @@ def all_(
             return kwargs.get(spec_name), False
         if p_name in kwargs:
             return kwargs.get(p_name), False
-        if func_name == "file":
-            if kwargs.get("tgt") and kwargs.get("tgt") in describe_config:
-                _tgt = kwargs.get("tgt")
-                return describe_config[_tgt].get(func_name, {}).get(p_name, None), False
+        if describe_config and kwargs and kwargs.get("tgt") in describe_config:
+            _tgt = kwargs.get("tgt")
+            return describe_config[_tgt].get(func_name, {}).get(p_name, None), False
         return None, True
 
     kwargs["tgt"] = tgt
