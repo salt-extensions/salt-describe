@@ -5,6 +5,7 @@ import logging
 from pathlib import PosixPath
 from pathlib import WindowsPath
 from unittest.mock import MagicMock
+from unittest.mock import call
 from unittest.mock import patch
 
 import pytest
@@ -143,7 +144,7 @@ def test_user():
                 )
 
 
-def test_user_minimum_maximum_uid():
+def test_user_minimum_maximum_uid(master_opts):
     user_getent = {
         "minion": [
             {
@@ -261,35 +262,41 @@ def test_user_minimum_maximum_uid():
 
     user_pillar = yaml.dump(user_pillar_contents)
 
-    with patch.dict(
-        salt_describe_user_runner.__salt__,
-        {
-            "salt.execute": MagicMock(
-                side_effect=[
-                    user_getent,
-                    user_shadow,
-                    fileexists,
-                    user_shadow2,
-                    fileexists,
-                    user_shadow3,
-                    fileexists,
-                ]
-            )
-        },
-    ):
-        with patch.object(salt_describe_user_runner, "generate_files") as generate_files_mock:
-            with patch.object(
-                salt_describe_user_runner, "generate_pillars"
-            ) as generate_pillars_mock:
-                assert "Generated SLS file locations" in salt_describe_user_runner.user(
-                    "minion", minimum_uid=999, maximum_uid=1001
+    master_opts["describe"] = {
+        "minion": {
+            "user": {"minimum_uid": 999, "maximum_uid": 1001},
+        }
+    }
+    with patch.dict(salt_describe_user_runner.__opts__, master_opts):
+        with patch.dict(
+            salt_describe_user_runner.__salt__,
+            {
+                "salt.execute": MagicMock(
+                    side_effect=[
+                        user_getent,
+                        user_shadow,
+                        fileexists,
+                        user_shadow2,
+                        fileexists,
+                        user_shadow3,
+                        fileexists,
+                    ]
                 )
-                generate_files_mock.assert_called_with(
-                    {}, "minion", user_sls, sls_name="users", config_system="salt"
-                )
-                generate_pillars_mock.assert_called_with(
-                    {}, "minion", user_pillar, sls_name="users"
-                )
+            },
+        ):
+            with patch.object(salt_describe_user_runner, "generate_files") as generate_files_mock:
+                with patch.object(
+                    salt_describe_user_runner, "generate_pillars"
+                ) as generate_pillars_mock:
+                    assert "Generated SLS file locations" in salt_describe_user_runner.user(
+                        "minion",
+                    )
+                    generate_files_mock.assert_called_with(
+                        master_opts, "minion", user_sls, sls_name="users", config_system="salt"
+                    )
+                    generate_pillars_mock.assert_called_with(
+                        master_opts, "minion", user_pillar, sls_name="users"
+                    )
 
 
 def test_group_permission_denied(minion_opts, caplog, perm_denied_error_log):
@@ -366,3 +373,197 @@ def test_user_permission_denied(minion_opts, caplog, perm_denied_error_log):
                     ret = salt_describe_user_runner.user("minion")
                     assert not ret
                     assert perm_denied_error_log in caplog.text
+
+
+def test_user_minimum_maximum_uid_gid(master_opts):
+    group_getent = {
+        "minion": [
+            {"gid": 0, "members": [], "name": "root", "passwd": "x"},
+            {"gid": 1000, "members": ["testuser"], "name": "testuser", "passwd": "x"},
+            {"gid": 1001, "members": ["testuser2"], "name": "testuser2", "passwd": "x"},
+            {"gid": 1002, "members": ["testuser3"], "name": "testuser3", "passwd": "x"},
+        ]
+    }
+
+    group_sls_contents = {
+        "group-testuser": {
+            "group.present": [
+                {"name": "testuser"},
+                {"gid": 1000},
+            ],
+        },
+        "group-testuser2": {
+            "group.present": [
+                {"name": "testuser2"},
+                {"gid": 1001},
+            ],
+        },
+    }
+
+    group_sls = yaml.dump(group_sls_contents)
+
+    user_getent = {
+        "minion": [
+            {
+                "name": "testuser",
+                "uid": 1000,
+                "gid": 1000,
+                "groups": ["adm"],
+                "home": "/home/testuser",
+                "passwd": "x",
+                "shell": "/usr/bin/zsh",
+                "fullname": "",
+                "homephone": "",
+                "other": "",
+                "roomnumber": "",
+                "workphone": "",
+            },
+            {
+                "name": "testuser2",
+                "uid": 1001,
+                "gid": 1001,
+                "groups": ["adm"],
+                "home": "/home/testuser2",
+                "passwd": "x",
+                "shell": "/usr/bin/zsh",
+                "fullname": "",
+                "homephone": "",
+                "other": "",
+                "roomnumber": "",
+                "workphone": "",
+            },
+            {
+                "name": "testuser3",
+                "uid": 1002,
+                "gid": 1002,
+                "groups": ["adm"],
+                "home": "/home/testuser3",
+                "passwd": "x",
+                "shell": "/usr/bin/zsh",
+                "fullname": "",
+                "homephone": "",
+                "other": "",
+                "roomnumber": "",
+                "workphone": "",
+            },
+        ]
+    }
+
+    user_shadow = {
+        "minion": {
+            "expire": -1,
+            "inact": -1,
+            "lstchg": 19103,
+            "max": 99999,
+            "min": 0,
+            "name": "testuser",
+            "passwd": "$5$k69zJBp1LxA3q8az$XKEp1knAex0j.xoi/sdU4XllHpZ0JzYYRfASKGl6qZA",
+            "warn": 7,
+        }
+    }
+    user_shadow2 = {
+        "minion": {
+            "expire": -1,
+            "inact": -1,
+            "lstchg": 19103,
+            "max": 99999,
+            "min": 0,
+            "name": "testuser",
+            "passwd": "$5$k69zJBp1LxA3q8az$XKEp1knAex0j.xoi/sdU4XllHpZ0JzYYRfASKGl6qZA",
+            "warn": 7,
+        }
+    }
+    user_shadow3 = {
+        "minion": {
+            "expire": -1,
+            "inact": -1,
+            "lstchg": 19103,
+            "max": 99999,
+            "min": 0,
+            "name": "testuser",
+            "passwd": "$5$k69zJBp1LxA3q8az$XKEp1knAex0j.xoi/sdU4XllHpZ0JzYYRfASKGl6qZA",
+            "warn": 7,
+        }
+    }
+
+    fileexists = {"minion": True}
+
+    user_sls_contents = {
+        "user-testuser": {
+            "user.present": [
+                {"name": "testuser"},
+                {"uid": 1000},
+                {"gid": 1000},
+                {"allow_uid_change": True},
+                {"allow_gid_change": True},
+                {"home": "/home/testuser"},
+                {"shell": "/usr/bin/zsh"},
+                {"groups": ["adm"]},
+                {"password": '{{ salt["pillar.get"]("users:testuser","*") }}'},
+                {"enforce_password": True},
+                {"date": 19103},
+                {"mindays": 0},
+                {"maxdays": 99999},
+                {"inactdays": -1},
+                {"expire": -1},
+                {"createhome": True},
+            ]
+        }
+    }
+
+    user_sls = yaml.dump(user_sls_contents)
+
+    user_pillar_contents = {
+        "users": {"testuser": "$5$k69zJBp1LxA3q8az$XKEp1knAex0j.xoi/sdU4XllHpZ0JzYYRfASKGl6qZA"},
+    }
+
+    user_pillar = yaml.dump(user_pillar_contents)
+
+    master_opts["describe"] = {
+        "minion": {
+            "user": {
+                "require_groups": True,
+                "minimum_uid": 999,
+                "maximum_uid": 1001,
+                "minimum_gid": 999,
+                "maximum_gid": 1002,
+            },
+        }
+    }
+    with patch.dict(salt_describe_user_runner.__opts__, master_opts):
+        with patch.dict(
+            salt_describe_user_runner.__salt__,
+            {
+                "salt.execute": MagicMock(
+                    side_effect=[
+                        group_getent,
+                        user_getent,
+                        user_shadow,
+                        fileexists,
+                        user_shadow2,
+                        fileexists,
+                        user_shadow3,
+                        fileexists,
+                    ]
+                ),
+                "describe.group": salt_describe_user_runner.group,
+            },
+        ):
+            with patch.object(salt_describe_user_runner, "generate_files") as generate_files_mock:
+                with patch.object(
+                    salt_describe_user_runner, "generate_pillars"
+                ) as generate_pillars_mock:
+                    assert "Generated SLS file locations" in salt_describe_user_runner.user(
+                        "minion",
+                    )
+                    group_call = call(
+                        master_opts, "minion", group_sls, sls_name="groups", config_system="salt"
+                    )
+                    user_call = call(
+                        master_opts, "minion", user_sls, sls_name="users", config_system="salt"
+                    )
+                    generate_files_mock.assert_has_calls([group_call, user_call], any_order=True)
+
+                    generate_pillars_mock.assert_called_with(
+                        master_opts, "minion", user_pillar, sls_name="users"
+                    )

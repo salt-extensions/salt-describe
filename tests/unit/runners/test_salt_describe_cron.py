@@ -218,4 +218,98 @@ def test_cron_permissioned_denied(minion_opts, caplog, cron_ret, perm_denied_err
                     assert perm_denied_error_log in caplog.text
 
 
-# pylint: enable=line-too-long
+def test_cron_configuration_file(tmp_path, cron_ret, master_opts):
+    expected_sls = {
+        'echo "goodbye there!"': {
+            "cron.present": [
+                {"minute": "10"},
+                {"hour": "12"},
+                {"daymonth": "*"},
+                {"month": "*"},
+                {"dayweek": "3"},
+                {"comment": None},
+                {"identifier": False},
+                {"commented": True},
+                {"user": "fake_user"},
+            ]
+        },
+        'echo "hello there!"': {
+            "cron.present": [
+                {"minute": "10"},
+                {"hour": "12"},
+                {"daymonth": "*"},
+                {"month": "*"},
+                {"dayweek": "4"},
+                {"comment": None},
+                {"identifier": False},
+                {"commented": False},
+                {"user": "fake_user"},
+            ]
+        },
+        'echo "special pre cron"': {
+            "cron.present": [
+                {"special": "@weekly"},
+                {"comment": None},
+                {"commented": False},
+                {"identifier": False},
+                {"user": "fake_user"},
+            ]
+        },
+        "echo foobar": {
+            "cron.present": [
+                {"user": "fake_user"},
+                {"minute": "*"},
+                {"hour": "*"},
+                {"daymonth": "*"},
+                {"month": "*"},
+                {"dayweek": "1"},
+                {"comment": "-- salt lol --"},
+                {"commented": False},
+                {"identifier": "SALT_CRON_JOB"},
+            ]
+        },
+        "echo silly goose": {
+            "cron.present": [
+                {"user": "fake_user"},
+                {"comment": None},
+                {"commented": True},
+                {"identifier": "SILLY CRON"},
+                {"special": "@weekly"},
+            ]
+        },
+        "echo this is commented": {
+            "cron.present": [
+                {"user": "fake_user"},
+                {"minute": "*"},
+                {"hour": "*"},
+                {"daymonth": "*"},
+                {"month": "*"},
+                {"dayweek": "1"},
+                {"comment": "This is a comment on a commented cron job"},
+                {"commented": True},
+                {"identifier": "commented_cron"},
+            ]
+        },
+    }
+
+    user = "fake_user"
+    cron_sls = yaml.dump(expected_sls)
+
+    master_opts["describe"] = {
+        "minion": {
+            "cron": {"user": "fake_user"},
+        }
+    }
+    salt_execute_mock = MagicMock(return_value=cron_ret)
+
+    with patch.dict(salt_describe_cron_runner.__opts__, master_opts):
+        with patch.dict(
+            salt_describe_cron_runner.__salt__,
+            {"salt.execute": salt_execute_mock},
+        ):
+            with patch.object(salt_describe_cron_runner, "generate_files") as generate_mock:
+                ret = salt_describe_cron_runner.cron("minion")
+                assert "Generated SLS file locations" in ret
+                salt_execute_mock.assert_called_with(
+                    "minion", "cron.ls", arg=["fake_user"], tgt_type="glob"
+                )

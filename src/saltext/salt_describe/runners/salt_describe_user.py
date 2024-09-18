@@ -28,7 +28,7 @@ def __virtual__():
 
 def user(
     tgt,
-    require_groups=False,
+    require_groups=None,
     minimum_uid=None,
     maximum_uid=None,
     minimum_gid=None,
@@ -46,6 +46,18 @@ def user(
 
         salt-run describe.user minion-tgt
     """
+    describe_config = __opts__.get("describe", {})
+    if not require_groups:
+        require_groups = describe_config.get(tgt, {}).get("user", {}).get("require_groups", False)
+    if not minimum_uid:
+        minimum_uid = describe_config.get(tgt, {}).get("user", {}).get("minimum_uid", None)
+    if not maximum_uid:
+        maximum_uid = describe_config.get(tgt, {}).get("user", {}).get("maximum_uid", None)
+    if not minimum_gid:
+        minimum_gid = describe_config.get(tgt, {}).get("user", {}).get("minimum_gid", None)
+    if not maximum_gid:
+        maximum_gid = describe_config.get(tgt, {}).get("user", {}).get("maximum_gid", None)
+
     mod_name = sys._getframe().f_code.co_name
     log.info("Attempting to generate SLS file for %s", mod_name)
     state_contents = {}
@@ -132,7 +144,7 @@ def user(
 
 def group(
     tgt,
-    include_members=False,
+    include_members=None,
     minimum_gid=None,
     maximum_gid=None,
     tgt_type="glob",
@@ -148,6 +160,14 @@ def group(
 
         salt-run describe.group minion-tgt
     """
+    describe_config = __opts__.get("describe", {})
+    if not include_members:
+        include_members = describe_config.get(tgt, {}).get("user", {}).get("include_members", False)
+    if not minimum_gid:
+        minimum_gid = describe_config.get(tgt, {}).get("user", {}).get("minimum_gid", None)
+    if not maximum_gid:
+        maximum_gid = describe_config.get(tgt, {}).get("user", {}).get("maximum_gid", None)
+
     sls_files = []
     mod_name = sys._getframe().f_code.co_name
     groups = __salt__["salt.execute"](
@@ -162,6 +182,8 @@ def group(
     for minion in list(groups.keys()):
         for group in groups[minion]:
             if minimum_gid and int(group["gid"]) <= minimum_gid:
+                continue
+            if maximum_gid and int(group["gid"]) >= maximum_gid:
                 continue
             groupname = group["name"]
             payload = [{"name": groupname}, {"gid": group["gid"]}]

@@ -10,6 +10,7 @@ import logging
 import sys
 
 import yaml
+from salt.exceptions import SaltInvocationError
 
 from saltext.salt_describe.utils.init import generate_files
 from saltext.salt_describe.utils.init import parse_salt_ret
@@ -25,7 +26,7 @@ def __virtual__():
     return __virtualname__
 
 
-def sysctl(tgt, sysctl_items, tgt_type="glob", config_system="salt"):
+def sysctl(tgt, sysctl_items=None, tgt_type="glob", config_system="salt"):
     """
     read sysctl on the minions and build a state file
     to managed the sysctl settings.
@@ -36,6 +37,17 @@ def sysctl(tgt, sysctl_items, tgt_type="glob", config_system="salt"):
 
         salt-run describe.sysctl minion-tgt '[vm.swappiness,vm.dirty_ratio]'
     """
+    describe_config = __opts__.get("describe", {})
+    if not sysctl_items:
+        sysctl_items = describe_config.get(tgt, {}).get("sysctl", {}).get("sysctl_items", [])
+        if not sysctl_items:
+            raise SaltInvocationError(
+                "Sysctl_items must be specified as an argument or in the configuration file."
+            )
+
+    if not isinstance(sysctl_items, list):
+        raise SaltInvocationError("Sysctl_items must be specified as a list.")
+
     mod_name = sys._getframe().f_code.co_name
     log.info("Attempting to generate SLS file for %s", mod_name)
     sysctls = __salt__["salt.execute"](

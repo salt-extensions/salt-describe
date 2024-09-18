@@ -62,7 +62,7 @@ def ssh_known_hosts(tgt, tgt_type="glob", config_system="salt", **kwargs):
 
     for minion in list(known_hosts.keys()):
         state_contents = getattr(sys.modules[__name__], f"_parse_{config_system}")(
-            minion, known_hosts, **kwargs
+            minion, known_hosts[minion], **kwargs
         )
         if config_system in ("ansible", "salt"):
             state = yaml.dump(state_contents)

@@ -12,6 +12,7 @@ import sys
 
 import salt.utils.files  # pylint: disable=import-error
 import yaml
+from salt.exceptions import SaltInvocationError
 
 from saltext.salt_describe.utils.init import generate_files
 from saltext.salt_describe.utils.init import get_minion_state_file_root
@@ -28,7 +29,7 @@ def __virtual__():
     return __virtualname__
 
 
-def file(tgt, paths, tgt_type="glob", config_system="salt"):
+def file(tgt, paths=None, tgt_type="glob", config_system="salt"):
     """
     Read a file on the minions and build a state file
     to managed a file.
@@ -39,6 +40,14 @@ def file(tgt, paths, tgt_type="glob", config_system="salt"):
 
         salt-run describe.file minion-tgt /etc/salt/minion
     """
+    describe_config = __opts__.get("describe", {})
+    if not paths:
+        paths = describe_config.get(tgt, {}).get("file", {}).get("paths", {})
+        if not paths:
+            raise SaltInvocationError(
+                "Paths must be specified as an argument or in the configuration file."
+            )
+
     mod_name = sys._getframe().f_code.co_name
     log.info("Attempting to generate SLS file for %s", mod_name)
     if isinstance(paths, str):
